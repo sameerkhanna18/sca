@@ -1,0 +1,10 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Uninstall tree utility
+      ansible.builtin.apt:
+        name: tree
+        state: absent
+        purge: yes        # optional: removes config files too
+        update_cache: yes

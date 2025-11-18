@@ -1,0 +1,16 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Install tree utility
+      ansible.builtin.apt:
+        name: tree
+        state: present
+        update_cache: yes
+    - name: Copy file with owner and permissions
+      ansible.builtin.copy:
+        src: index.html
+        dest: /var/www/sktesthtml
+        owner: root
+        group: root
+        mode: '0644'
