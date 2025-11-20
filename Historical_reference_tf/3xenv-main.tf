@@ -79,6 +79,50 @@ resource "aws_security_group" "dev_sg" {
   tags = { Name = "dev-sg" }
 }
 
+resource "aws_security_group" "qa_sg" {
+  name        = "qa-sg"
+  vpc_id      = aws_vpc.sca_vpc.id
+
+  ingress {
+    description = "SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = { Name = "qa-sg" }
+}
+
+resource "aws_security_group" "prod_sg" {
+  name        = "prod-sg"
+  vpc_id      = aws_vpc.sca_vpc.id
+
+  ingress {
+    description = "SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = { Name = "prod-sg" }
+}
+
 resource "aws_instance" "dev" {
   ami                      = var.ubuntu_ami
   instance_type            = "t2.micro"
@@ -87,4 +131,24 @@ resource "aws_instance" "dev" {
   vpc_security_group_ids = [aws_security_group.dev_sg.id]
 
   tags = { Name = "sca-dev", Env = "Dev" }
+}
+
+resource "aws_instance" "qa" {
+  ami                      = var.ubuntu_ami
+  instance_type            = "t2.micro"
+  key_name                 = aws_key_pair.sca_key.key_name
+  subnet_id                = aws_subnet.public_subnet.id
+  vpc_security_group_ids = [aws_security_group.qa_sg.id]
+
+  tags = { Name = "sca-qa", Env = "QA" }
+}
+
+resource "aws_instance" "prod" {
+  ami                      = var.ubuntu_ami
+  instance_type            = "t2.micro"
+  key_name                 = aws_key_pair.sca_key.key_name
+  subnet_id                = aws_subnet.public_subnet.id
+  vpc_security_group_ids = [aws_security_group.prod_sg.id]
+
+  tags = { Name = "sca-prod", Env = "Prod" }
 }
